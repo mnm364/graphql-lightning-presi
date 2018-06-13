@@ -4,8 +4,8 @@ const { buildSchema } = require('graphql');
 
 // Data sources
 const events = require('./data/events');
-const people = require('./data/events');
-const teams = require('./data/events');
+// const people = require('./data/people');
+const teams = require('./data/teams');
 const locations = require('./data/locations')
 
 // GraphQL schema
@@ -19,18 +19,18 @@ const schema = buildSchema(`
 
 	interface Entity {
 		id: Int
-		type: EntityType
+		type: String
 		name: String
 	}
 
 	type Query {
-		entities: [ Entity ]
+		entities: [ Person ]
 		count: Int
 	}
 
 	type Team implements Entity {
 		id: Int
-		type: EntityType
+		type: String
 		name: String
 		fullTimeMembers: [ Person ]
 		interns: [ Person ]
@@ -40,7 +40,7 @@ const schema = buildSchema(`
 
 	type Event implements Entity {
 		id: Int
-		type: EntityType
+		type: String
 		name: String
 		description: String
 		location: Location
@@ -49,14 +49,14 @@ const schema = buildSchema(`
 
 	type Person implements Entity {
 		id: Int
-		type: EntityType
+		type: String
 		name: String
 		age: Int
 	}
 
 	type Location implements Entity {
 		id: Int
-		type: EntityType
+		type: String
 		name: String
 		address: LocationAddress
 	}
@@ -70,10 +70,70 @@ const schema = buildSchema(`
 	}
 `);
 
+const people = [
+	{
+		"id": 200,
+		"name": "Michael Miller",
+		"age": 23
+	},
+	{
+		"id": 201,
+		"name": "Sean Egan",
+		"age": 21
+	},
+	{
+		"id": 202,
+		"name": "Peter Rimshnick",
+		"age": 35
+	},
+	{
+		"id": 203,
+		"name": "Oscar Li",
+		"age": 25
+	},
+	{
+		"id": 204,
+		"name": "Alex Politis",
+		"age": 27
+	},
+	{
+		"id": 205,
+		"name": "Yi Liu",
+		"age": 29 // idk
+	},
+	{
+		"id": 206,
+		"name": "Sharang Chakraborty",
+		"age": 23
+	},
+	{
+		"id": 207,
+		"name": "Diana Chang",
+		"age": 21
+	},
+	{
+		"id": 208,
+		"name": "Naomi Levin",
+		"age": 28 // idk
+	},
+	{
+		"id": 209,
+		"name": "Matthew Spencer",
+		"age": 29 // idk
+	}
+];
+
+const renderedPeople = people.map(p => {
+	p.type = "PERSON";
+	return p;
+});
+
 // Root resolver
 const root = {
-	message: () => 'Hello World!'
+	entities: () => renderedPeople,
+	count: () => 2
 };
+
 
 // Create an express server and a GraphQL endpoint
 const app = express();
