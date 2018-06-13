@@ -121,18 +121,17 @@ const schema = buildSchema(`
 
 	interface Entity {
 		id: Int
-		type: String
+		type: EntityType
 		name: String
 	}
 
 	type Query {
-		entities: [ Entity ]
-		count: Int
+		entities(id: Int, name: String, type: EntityType): [ Entity ]
 	}
 
 	type Team implements Entity {
 		id: Int
-		type: String
+		type: EntityType
 		name: String
 		fullTimeMembers: [ Person ]
 		interns: [ Person ]
@@ -142,7 +141,7 @@ const schema = buildSchema(`
 
 	type Event implements Entity {
 		id: Int
-		type: String
+		type: EntityType
 		name: String
 		description: String
 		location: Location
@@ -151,14 +150,14 @@ const schema = buildSchema(`
 
 	type Person implements Entity {
 		id: Int
-		type: String
+		type: EntityType
 		name: String
 		age: Int
 	}
 
 	type Location implements Entity {
 		id: Int
-		type: String
+		type: EntityType
 		name: String
 		address: LocationAddress
 	}
@@ -218,10 +217,32 @@ const renderedLocation = locations.map(renderLocation);
 const renderedTeams = teams.map(renderTeam);
 const renderedEvents = events.map(renderEvent);
 
+const getEntities = args => {
+	var all = renderedPeople
+		.concat(renderedLocation)
+		.concat(renderedTeams)
+		.concat(renderedEvents);
+
+	var filtered = all;
+
+	if (args.type) {
+		filtered = filtered.filter(e => e.type == args.type);
+	}
+
+	if (args.name) {
+		filtered = filtered.filter(e => e.name == args.name);
+	}
+
+	if (args.id) {
+		filtered = filtered.filter(e => e.id == args.id);
+	}
+
+	return filtered;
+}
+
 // Root resolver
 const root = {
-	entities: () => renderedPeople.concat(renderedLocation).concat(renderedTeams).concat(renderedEvents),
-	count: () => 2
+	entities: getEntities
 };
 
 
